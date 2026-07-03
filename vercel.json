@@ -6,23 +6,23 @@
     "crons": [
       {
         "path": "/api/story/ingest",
-        "schedule": "*/30 * * * *"
+        "schedule": "0 0 * * *"
       },
       {
         "path": "/api/story/voice-vectorise",
-        "schedule": "*/15 * * * *"
+        "schedule": "0 0 * * *"
       },
       {
         "path": "/api/docs/ingest",
-        "schedule": "*/30 * * * *"
+        "schedule": "0 0 * * *"
       },
       {
         "path": "/api/story/page-vectorise",
-        "schedule": "*/15 * * * *"
+        "schedule": "0 0 * * *"
       },
       {
         "path": "/api/story/resource-vectorise",
-        "schedule": "*/15 * * * *"
+        "schedule": "0 0 * * *"
       }
     ]
   }
