@@ -1,9 +1,9 @@
 import { execFile } from 'child_process';
 import fs from 'fs';
-import os from 'os';
 import path from 'path';
 import { promisify } from 'util';
 import OpenAI from 'openai';
+import { createTempDirectory } from './temp.js';
 
 const execFileAsync = promisify(execFile);
 
@@ -18,7 +18,7 @@ export async function transcribeAudioFile(localPath: string): Promise<string> {
 }
 
 export async function downloadYoutubeAudio(videoId: string): Promise<string> {
-  const outputDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'transcribe-yt-'));
+  const outputDir = await createTempDirectory('transcribe-yt-');
   const outputTemplate = path.join(outputDir, `${videoId}.%(ext)s`);
 
   try {

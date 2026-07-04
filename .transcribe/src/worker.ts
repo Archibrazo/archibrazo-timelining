@@ -1,5 +1,6 @@
 import type { TranscriptionCallback, TranscribeJob } from './types.js';
 import { downloadYoutubeAudio, removePath, transcribeAudioFile } from './audio.js';
+import { createTempFilePath } from './temp.js';
 
 function getTelegramBotToken(): string {
   const token =
@@ -41,10 +42,9 @@ async function downloadTelegramVoice(filePath: string): Promise<string> {
   }
 
   const fs = await import('fs');
-  const os = await import('os');
   const path = await import('path');
   const ext = path.extname(filePath) || '.oga';
-  const localPath = path.join(os.tmpdir(), `voice-${Date.now()}${ext}`);
+  const localPath = await createTempFilePath('voice-', ext);
   await fs.promises.writeFile(localPath, Buffer.from(await response.arrayBuffer()));
   return localPath;
 }

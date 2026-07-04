@@ -15,6 +15,8 @@ npm start
 
 Requires env: `OPENAI_API_KEY`, `PRIVATE_API_TOKEN`, `TIMELINING_BASE_URL`, `TIMELINING_PRIVATE_API_TOKEN`, `TELEGRAM_BOT_TOKEN`.
 
+Optional: `TRANSCRIBE_TMPDIR` (writable temp directory for yt-dlp downloads; defaults to `TMPDIR`, `os.tmpdir()`, or `/tmp`).
+
 Callbacks for both `youtube` (Resource) and `telegram_voice` (Voice) POST to timelining.
 
 ## Railway

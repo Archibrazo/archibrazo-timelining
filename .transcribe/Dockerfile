@@ -15,6 +15,9 @@ COPY tsconfig.json ./
 COPY src ./src
 RUN npm install typescript && npm run build && npm uninstall typescript
 
+RUN mkdir -p /tmp && chmod 1777 /tmp
+
+ENV TMPDIR=/tmp
 ENV PORT=8080
 EXPOSE 8080
 
