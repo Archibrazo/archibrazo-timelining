@@ -17,6 +17,10 @@ RUN npm install typescript && npm run build && npm uninstall typescript
 
 RUN mkdir -p /tmp && chmod 1777 /tmp
 
+# yt-dlp needs `node` on PATH for --js-runtimes node (YouTube EJS extraction).
+ENV PATH="/usr/local/bin:${PATH}"
+RUN node --version && command -v node && command -v yt-dlp
+
 ENV TMPDIR=/tmp
 ENV PORT=8080
 EXPOSE 8080

@@ -25,6 +25,10 @@ export async function downloadYoutubeAudio(videoId: string): Promise<string> {
     await execFileAsync(
       'yt-dlp',
       [
+        '--extractor-args',
+        'youtube:player_client=ios',
+        '--js-runtimes',
+        'node',
         '-f',
         'bestaudio/best',
         '--extract-audio',
