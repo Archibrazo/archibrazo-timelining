@@ -2,6 +2,7 @@ import { runDocsPageVerification } from '@/services/docs/pageVerify';
 import { redis } from '@/lib/redis';
 import { countPagesNeedingVectorisation } from '@/services/vectorise/page/neo4j';
 import {
+  countAwaitingTranscribe,
   countOutstanding as countResourceOutstanding,
   countPipelineByStatus as countResourcePipelineByStatus,
 } from '@/services/vectorise/resource/neo4j';
@@ -39,6 +40,7 @@ export interface PageVectoriseBacklog {
 
 export interface ResourceVectoriseBacklog {
   outstanding: number;
+  awaitingTranscribe: number;
   counts: import('@/services/vectorise/resource/types').ResourcePipelineCounts;
 }
 
@@ -110,11 +112,12 @@ export async function getPageVectoriseBacklog(): Promise<PageVectoriseBacklog> {
 }
 
 export async function getResourceVectoriseBacklog(): Promise<ResourceVectoriseBacklog> {
-  const [outstanding, counts] = await Promise.all([
+  const [outstanding, awaitingTranscribe, counts] = await Promise.all([
     countResourceOutstanding(),
+    countAwaitingTranscribe(),
     countResourcePipelineByStatus(),
   ]);
-  return { outstanding, counts };
+  return { outstanding, awaitingTranscribe, counts };
 }
 
 export async function getDocsSyncBacklog(): Promise<DocsSyncBacklog | null> {
@@ -160,6 +163,7 @@ export function pipelineHasBacklog(summary: PipelineBacklogSummary): boolean {
   if (summary.voice.outstanding > 0) return true;
   if (summary.page.outstanding > 0) return true;
   if (summary.resource.outstanding > 0) return true;
+  if (summary.resource.awaitingTranscribe > 0) return true;
   if (summary.docsSync != null && summary.docsSync.needsAttention > 0) return true;
   return false;
 }

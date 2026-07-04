@@ -84,16 +84,22 @@ function printVectorise(summary: Pick<PipelineBacklogSummary, 'voice' | 'page' |
     console.log('     Tick: POST /api/story/page-vectorise');
   }
 
-  const resourceIcon = statusIcon(resource.outstanding > 0 || resource.counts.failed > 0);
+  const resourceIcon = statusIcon(
+    resource.outstanding > 0 || resource.awaitingTranscribe > 0 || resource.counts.failed > 0
+  );
   console.log(`${resourceIcon}  Resource (Resource.processingStatus)`);
-  console.log(`     outstanding: ${resource.outstanding}  (transcribed + chunked)`);
+  console.log(`     awaiting transcribe: ${resource.awaitingTranscribe}  (pending youtube)`);
+  console.log(`     outstanding vectorise: ${resource.outstanding}  (transcribed + chunked)`);
   console.log(
     `     pending: ${resource.counts.pending}, transcribed: ${resource.counts.transcribed}, ` +
       `chunked: ${resource.counts.chunked}, vectorised: ${resource.counts.vectorised}, ` +
       `failed: ${resource.counts.failed}`
   );
+  if (resource.awaitingTranscribe > 0) {
+    console.log('     Transcribe tick: POST /api/story/transcribe');
+  }
   if (resource.outstanding > 0) {
-    console.log('     Tick: POST /api/story/resource-vectorise (chunk/embed chain)');
+    console.log('     Vectorise tick: POST /api/story/resource-vectorise (chunk/embed chain)');
   }
 
   if (docsSync) {

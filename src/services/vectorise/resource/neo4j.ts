@@ -63,6 +63,78 @@ export async function loadResourceById(resourceId: string): Promise<ResourceNode
   }
 }
 
+export async function markResourceTranscribed(
+  resourceId: string,
+  transcription: string
+): Promise<boolean> {
+  const driver = await initDriver();
+  const session = driver.session({ database: 'neo4j' });
+
+  try {
+    const result = await session.run(
+      `
+      MATCH (r:Resource {id: $resourceId})
+      SET r.transcription = $transcription,
+          r.transcriptSource = 'whisper',
+          r.processingStatus = 'transcribed',
+          r.retryCount = 0,
+          r.failedStage = NULL
+      RETURN r.id AS id
+      `,
+      { resourceId, transcription }
+    );
+    return result.records.length > 0;
+  } finally {
+    await session.close();
+  }
+}
+
+export async function countAwaitingTranscribe(): Promise<number> {
+  const driver = await initDriver();
+  const session = driver.session({ database: 'neo4j' });
+
+  try {
+    const result = await session.run(
+      `
+      MATCH (r:Resource)
+      WHERE ${YOUTUBE_ELIGIBLE_WHERE}
+        AND coalesce(r.processingStatus, 'pending') = 'pending'
+      RETURN count(r) AS count
+      `
+    );
+    return result.records[0].get('count').toNumber();
+  } finally {
+    await session.close();
+  }
+}
+
+export async function loadPendingResourceIdForEntry(entryId: string): Promise<string | null> {
+  const driver = await initDriver();
+  const session = driver.session({ database: 'neo4j' });
+
+  try {
+    const result = await session.run(
+      `
+      MATCH (e:Entry {id: $entryId})-[:HAS_RESOURCE]->(r:Resource)
+      WHERE ${YOUTUBE_ELIGIBLE_WHERE}
+        AND coalesce(r.processingStatus, 'pending') = 'pending'
+      RETURN r.id AS resourceId
+      ORDER BY r.createdAt DESC
+      LIMIT 1
+      `,
+      { entryId }
+    );
+
+    if (result.records.length === 0) {
+      return null;
+    }
+
+    return result.records[0].get('resourceId') as string;
+  } finally {
+    await session.close();
+  }
+}
+
 export async function markChunked(resourceId: string, chunks: string[]): Promise<void> {
   const driver = await initDriver();
   const session = driver.session({ database: 'neo4j' });

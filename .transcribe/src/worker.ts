@@ -50,30 +50,19 @@ async function downloadTelegramVoice(filePath: string): Promise<string> {
 }
 
 function callbackUrlForJob(job: TranscribeJob): string {
-  if (job.sourceKind === 'youtube') {
-    const base = process.env.ENACT_BASE_URL?.replace(/\/$/, '');
-    if (!base) {
-      throw new Error('ENACT_BASE_URL not configured');
-    }
-    return `${base}/api/webhook/transcription/resource`;
-  }
-
   const base = process.env.TIMELINING_BASE_URL?.replace(/\/$/, '');
   if (!base) {
     throw new Error('TIMELINING_BASE_URL not configured');
   }
+
+  if (job.sourceKind === 'youtube') {
+    return `${base}/api/story/transcription/resource`;
+  }
+
   return `${base}/api/story/transcription/voice`;
 }
 
-function callbackTokenForJob(job: TranscribeJob): string {
-  if (job.sourceKind === 'youtube') {
-    const token = process.env.ENACT_PRIVATE_API_TOKEN ?? process.env.PRIVATE_API_TOKEN;
-    if (!token?.trim()) {
-      throw new Error('ENACT_PRIVATE_API_TOKEN not configured');
-    }
-    return token.trim();
-  }
-
+function callbackTokenForJob(_job: TranscribeJob): string {
   const token = process.env.TIMELINING_PRIVATE_API_TOKEN ?? process.env.PRIVATE_API_TOKEN;
   if (!token?.trim()) {
     throw new Error('TIMELINING_PRIVATE_API_TOKEN not configured');
