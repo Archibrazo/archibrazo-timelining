@@ -163,7 +163,7 @@ describe('pipelineActionsAfterIngest', () => {
     ]);
   });
 
-  it('skips transcribe for deferred long voice', () => {
+  it('dispatches long voice to transcribe service', () => {
     const actions = pipelineActionsAfterIngest(
       '_botAgendar',
       makeEntryInput({
@@ -175,10 +175,27 @@ describe('pipelineActionsAfterIngest', () => {
           mimeType: 'audio/ogg',
         },
       }),
-      makeEntry(),
+      makeEntry({
+        voice: {
+          id: 'voice-1',
+          fileId: 'f1',
+          fileUniqueId: 'fu1',
+          fileSize: 1,
+          duration: 200,
+          mimeType: 'audio/ogg',
+          processingStatus: 'pending',
+          retryCount: 0,
+        },
+      }),
       origin
     );
-    expect(actions).toEqual([{ kind: 'none' }]);
+    expect(actions).toEqual([
+      {
+        kind: 'dispatch-transcribe-service',
+        voiceId: 'voice-1',
+        telegramFileId: 'f1',
+      },
+    ]);
   });
 
   it('triggers resolve for enrol text on ingest', () => {
@@ -207,5 +224,35 @@ describe('pipelineActionsAfterIngest', () => {
       origin
     );
     expect(actions).toEqual([{ kind: 'none' }]);
+  });
+
+  it('triggers resolve for recursos text', () => {
+    const actions = pipelineActionsAfterIngest(
+      '_botRecursos',
+      makeEntryInput({
+        chat: { id: 1, type: 'supergroup', topic: '_botRecursos' },
+        textContent: { text: 'https://www.youtube.com/watch?v=abc123' },
+      }),
+      makeEntry({ chat: { id: 1, type: 'supergroup', topic: '_botRecursos' } }),
+      origin
+    );
+    expect(actions).toEqual([
+      { kind: 'trigger-resolve', entryId: 'entry-1', topic: '_botRecursos' },
+    ]);
+  });
+
+  it('triggers resolve for resources alias topic', () => {
+    const actions = pipelineActionsAfterIngest(
+      '_botResources',
+      makeEntryInput({
+        chat: { id: 1, type: 'supergroup', topic: '_botResources' },
+        textContent: { text: 'https://youtu.be/abc123' },
+      }),
+      makeEntry({ chat: { id: 1, type: 'supergroup', topic: '_botResources' } }),
+      origin
+    );
+    expect(actions).toEqual([
+      { kind: 'trigger-resolve', entryId: 'entry-1', topic: '_botResources' },
+    ]);
   });
 });

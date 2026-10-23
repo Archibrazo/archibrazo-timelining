@@ -1,24 +1,32 @@
 {
     "version": 2,
     "env": {
-        "NODE_VERSION": "20.x"
+      "NODE_VERSION": "20.x"
     },
     "crons": [
-        {
-            "path": "/api/story/ingest",
-            "schedule": "0 0 * * *"
-        },
-        {
-            "path": "/api/story/voice-vectorise",
-            "schedule": "0 0 * * *"
-        },
-        {
-            "path": "/api/docs/ingest",
-            "schedule": "0 0 * * *"
-        },
-        {
-            "path": "/api/story/page-vectorise",
-            "schedule": "0 0 * * *"
-        }
+      {
+        "path": "/api/story/ingest",
+        "schedule": "0 0 * * *"
+      },
+      {
+        "path": "/api/story/voice-vectorise",
+        "schedule": "0 0 * * *"
+      },
+      {
+        "path": "/api/story/transcribe",
+        "schedule": "0 0 * * *"
+      },
+      {
+        "path": "/api/docs/ingest",
+        "schedule": "0 0 * * *"
+      },
+      {
+        "path": "/api/story/page-vectorise",
+        "schedule": "0 0 * * *"
+      },
+      {
+        "path": "/api/story/resource-vectorise",
+        "schedule": "0 0 * * *"
+      }
     ]
-}
+  }

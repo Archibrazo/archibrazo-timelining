@@ -21,6 +21,17 @@ export type {
 } from './page';
 
 export {
+  runResourceVectoriseTick,
+  buildResourceVectoriseResult,
+  runResourceVectoriseWithAvailabilityCheck,
+} from './resource';
+export type {
+  ResourceVectoriseResult,
+  ResourcePipelineCounts,
+  ResourceVectoriseTickResult,
+} from './resource';
+
+export {
   EXECUTION_TIMEOUT_MS,
   VECTORISE_BATCH_SIZE,
   PAGE_VECTORISE_BATCH_SIZE,
