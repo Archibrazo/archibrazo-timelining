@@ -81,7 +81,7 @@ describe('Entry source and topic', () => {
       { legacy: LEGACY_MESSAGE_ID, orphan: ORPHAN_MESSAGE_ID }
     );
     const backfilled = rows.records.map((r) => ({
-      messageId: r.get('messageId').toNumber(),
+      messageId: Number(r.get('messageId')),
       source: r.get('source'),
       topic: r.get('topic'),
     }));
