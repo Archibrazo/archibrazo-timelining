@@ -17,6 +17,7 @@
     "db:backlog": "tsx scripts/db/pipeline-backlog.ts",
     "db:backlog:ingest": "tsx scripts/db/pipeline-backlog.ts --stage ingest",
     "db:backlog:vectorise": "tsx scripts/db/pipeline-backlog.ts --stage vectorise",
+    "db:entry-source:backfill": "tsx scripts/db/entry-source-backfill.ts",
     "db:vector-index:backfill": "tsx scripts/db/vector-index-backfill.ts",
     "db:vector-index:check": "tsx scripts/db/vector-index-check.ts",
     "db:vector-index:create": "tsx scripts/db/vector-index-create.ts",
