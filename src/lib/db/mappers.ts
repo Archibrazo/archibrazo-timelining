@@ -128,6 +128,8 @@ function mapEntryNode(node: Node): EntryNode {
         updateId: node.properties.updateId,
         messageId: node.properties.messageId,
         date: node.properties.date,
+        source: node.properties.source,
+        topic: node.properties.topic ?? null,
     };
 }
 

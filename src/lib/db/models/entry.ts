@@ -12,11 +12,16 @@ export interface TelegramChatNode {
 
 export type ResolveStatus = 'pending' | 'attempted' | 'successful' | 'failed';
 
+/** Where an entry came from. Entries written before sources existed are backfilled as 'telegram'. */
+export type EntrySource = 'telegram' | 'github';
+
 export interface EntryNode {
   id: string;
   updateId: number;
   messageId: number;
   date: string;
+  source?: EntrySource;
+  topic?: string | null;
   resolveStatus?: ResolveStatus;
   resolvedAt?: string | null;
   resolveFailureReason?: string | null;

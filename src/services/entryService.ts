@@ -73,6 +73,8 @@ export async function createEntry(input: FullEntryInputData): Promise<string> {
             updateId: $updateId,
             messageId: $messageId,
             date: datetime($date),
+            source: 'telegram',
+            topic: c.topic,
             resolveStatus: 'pending',
             resolvedAt: null
           })-[:SENT_BY]->(p)
