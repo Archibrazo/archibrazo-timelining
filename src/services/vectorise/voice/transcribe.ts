@@ -26,11 +26,35 @@ function getBotToken(): string {
   return token;
 }
 
+/**
+ * GET against the Telegram Bot API with retries. Errors are rethrown without the
+ * axios request config, whose URL embeds the bot token and would otherwise end up in logs.
+ */
+async function telegramGet(
+  url: string,
+  options: { params?: Record<string, string>; responseType?: 'arraybuffer'; timeout: number },
+  attempts = 3
+) {
+  let lastMessage = 'unknown error';
+  for (let attempt = 1; attempt <= attempts; attempt++) {
+    try {
+      return await axios.get(url, options);
+    } catch (err) {
+      const code = axios.isAxiosError(err) ? err.code ?? err.response?.status : undefined;
+      lastMessage = `${err instanceof Error ? err.message : String(err)}${code ? ` (${code})` : ''}`;
+      if (attempt < attempts) {
+        await new Promise((resolve) => setTimeout(resolve, 1000 * attempt));
+      }
+    }
+  }
+  throw new Error(`Telegram request failed after ${attempts} attempts: ${lastMessage}`);
+}
+
 async function getTelegramFilePath(fileId: string): Promise<string | null> {
   const botToken = getBotToken();
-  const response = await axios.get(`https://api.telegram.org/bot${botToken}/getFile`, {
+  const response = await telegramGet(`https://api.telegram.org/bot${botToken}/getFile`, {
     params: { file_id: fileId },
-    timeout: 5000,
+    timeout: 8000,
   });
 
   if (response.data?.ok) {
@@ -42,7 +66,7 @@ async function getTelegramFilePath(fileId: string): Promise<string | null> {
 async function downloadTelegramFile(filePath: string): Promise<string> {
   const botToken = getBotToken();
   const url = `https://api.telegram.org/file/bot${botToken}/${filePath}`;
-  const response = await axios.get(url, { responseType: 'arraybuffer', timeout: 15000 });
+  const response = await telegramGet(url, { responseType: 'arraybuffer', timeout: 15000 }, 2);
 
   const ext = path.extname(filePath) || '.oga';
   const localPath = path.join(os.tmpdir(), `voice-${Date.now()}${ext}`);
